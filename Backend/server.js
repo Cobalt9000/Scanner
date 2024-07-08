@@ -11,6 +11,8 @@ import mailData from './utils/mail.js';
 import Project from './models/project.model.js';
 import ScanReport from './models/scanReport.model.js';
 import connectToMongoDB from './db.js';
+import { TextServiceClient } from '@google-ai/generativelanguage';
+import { GoogleAuth } from 'google-auth-library';
 dotenv.config();
 const app = express();
 const port = 3000;
@@ -167,6 +169,45 @@ app.post('/createReport', async (req, res) => {
     res.status(201).json(scanReport);
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+});
+
+app.post('/gemini-chat', async (req, res) => {
+  const { message } = req.body;
+  
+  const client = new TextServiceClient({
+    authClient: new GoogleAuth().fromAPIKey(process.env.GEMINI_API_KEY),
+  });
+
+  try {
+    const result = await client.generateText({
+      model: 'models/text-bison-001',
+      prompt: { text: message },
+    });
+
+    res.json({ response: result[0].candidates[0].output });
+  } catch (error) {
+    console.error('Error calling Gemini API:', error);
+    res.status(500).json({ error: 'Failed to get response from Gemini' });
+  }
+});
+
+app.post('/api/get-regex', async (req, res) => {
+  const { key } = req.body;
+
+  try {
+    const result = await client.generateText({
+      model: 'models/text-bison-001',
+      prompt: {
+        text: `Generate a regex pattern for identifying ${key} in text. Only respond with the regex pattern, nothing else.`
+      },
+    });
+
+    const regex = result[0].candidates[0].output.trim();
+    res.json({ regex });
+  } catch (error) {
+    console.error('Error calling Text-to-Text API:', error);
+    res.status(500).json({ error: 'Failed to generate regex pattern' });
   }
 });
 

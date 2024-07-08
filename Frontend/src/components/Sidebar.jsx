@@ -23,6 +23,9 @@ const SideBar = () => {
               <li>
                 <Link to="/reports" className="text-[#CCCCCC] hover:text-[#A8C5DA]">Reports</Link>
               </li>
+              <li>
+                <Link to="/Chatbot" className="text-[#CCCCCC] hover:text-[#A8C5DA]">Chatbot</Link>
+              </li>
             </ul>
           </details>
         </li>

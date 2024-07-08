@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import axios from 'axios';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -240,11 +241,41 @@ const Overview = () => {
     }
   };
 
-  const handleKeyValuePairChange = (index, field, value) => {
-    const newKeyValuePairs = keyValuePairs.map((pair, idx) =>
-      idx === index ? { ...pair, [field]: value } : pair
-    );
-    setKeyValuePairs(newKeyValuePairs);
+  // const handleKeyValuePairChange = (index, field, value) => {
+  //   const newKeyValuePairs = keyValuePairs.map((pair, idx) =>
+  //     idx === index ? { ...pair, [field]: value } : pair
+  //   );
+  //   setKeyValuePairs(newKeyValuePairs);
+  // };
+
+  const [isLoadingRegex, setIsLoadingRegex] = useState(false);
+
+  const getRegexFromTextToText = async (key) => {
+    setIsLoadingRegex(true);
+    try {
+      const response = await axios.post('http://localhost:3000/api/get-regex', { key });
+      setIsLoadingRegex(false);
+      return response.data.regex;
+    } catch (error) {
+      console.error('Error fetching regex from Text-to-Text API:', error);
+      setIsLoadingRegex(false);
+      return '';
+    }
+  };
+
+  const handleKeyValuePairChange = async (index, field, value) => {
+    if (field === 'key') {
+      const regex = await getRegexFromTextToText(value);
+      const newKeyValuePairs = keyValuePairs.map((pair, idx) =>
+        idx === index ? { key: value, value: regex } : pair
+      );
+      setKeyValuePairs(newKeyValuePairs);
+    } else {
+      const newKeyValuePairs = keyValuePairs.map((pair, idx) =>
+        idx === index ? { ...pair, [field]: value } : pair
+      );
+      setKeyValuePairs(newKeyValuePairs);
+    }
   };
 
   return (
@@ -296,25 +327,22 @@ const Overview = () => {
                 className="bg-[#282828] text-white rounded-lg py-4 px-4 w-full mb-2 focus:outline-none"
               />
               {keyValuePairs.map((pair, index) => (
-                <div className="flex space-x-2 mb-2" key={index}>
-                  <input
-                    type="text"
-                    placeholder="Key"
-                    value={pair.key}
-                    onChange={(e) =>
-                      handleKeyValuePairChange(index, 'key', e.target.value)
-                    }
-                    className="bg-[#282828] text-white rounded-lg py-4 px-4 flex-1 focus:outline-none"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Value"
-                    value={pair.value}
-                    onChange={(e) =>
-                      handleKeyValuePairChange(index, 'value', e.target.value)
-                    }
-                    className="bg-[#282828] text-white rounded-lg py-4 px-4 flex-1 focus:outline-none"
-                  />
+              <div className="flex space-x-2 mb-2" key={index}>
+                <input
+                  type="text"
+                  placeholder="Key (PII Type)"
+                  value={pair.key}
+                  onChange={(e) => handleKeyValuePairChange(index, 'key', e.target.value)}
+                  className="bg-[#282828] text-white rounded-lg py-4 px-4 flex-1 focus:outline-none"
+                />
+                <input
+                  type="text"
+                  placeholder="Value (Regex)"
+                  value={pair.value}
+                  onChange={(e) => handleKeyValuePairChange(index, 'value', e.target.value)}
+                  className="bg-[#282828] text-white rounded-lg py-4 px-4 flex-1 focus:outline-none"
+                />
+                {isLoadingRegex && <span className="text-white">Loading regex...</span>}
                   {keyValuePairs.length > 1 && (
                     <button
                       className="bg-[#282828] hover:bg-red-700 text-white py-2 px-4 rounded"

@@ -30,12 +30,12 @@
   
   Install dependencies for the frontend and backend:
 
-  Frontend: cd frontend && npm install
+  Frontend: cd frontend & npm install
   
-  Backend: cd backend && npm install
+  Backend: cd backend & npm install
 
 
-  Set up the required environment variables for the backend, GitHub API token in .env file.
+  Set up the required environment variables for the backend, GitHub API token, MONGO_DB_URI, GEMINI_API_KEY in .env file.
 
 
   Start the frontend and backend servers:
@@ -87,7 +87,8 @@
   i> cors
   ii> dotenv
   iii> express
-  iV> octokit 
+  iV> octokit
+  V> Gemini API 
   are the dependencies to be installed.
 
   use the following commands in the terminal in Backend directory
@@ -96,6 +97,7 @@
   npm i dotenv
   npm i express
   npm i octokit
+  npm install @google-ai/generativelanguage
   ```
   
   
@@ -106,7 +108,7 @@
 
   i> Install dependencies (npm install)
 
-  ii> Set up a GitHub access token as an environment variable (GITHUB_TOKEN) and add it in the environment variables .env file.
+  ii> Set up a GitHub access token as an environment variable (GITHUB_TOKEN), a MongoDB connection (MONGO_DB_URI), and a gemini api key (GEMINI_API_KEY) and add it in the environment variables .env file.
 
   iii> Start the development server (npm run dev)
 
@@ -131,7 +133,7 @@
 
   ## Contributors 🧑‍💻
 
-  [ayushsingh01042003](https://github.com/ayushsingh01042003/) , [MckinellGreen7](https://github.com/MckinellGreen7/) , [smk927](https://github.com/smk927/) , [Cobalt9000](https://github.com/Cobalt9000/) , [ArshGupta74](https://github.com/ArshGupta74/)
+  [ayushsingh01042003](https://github.com/ayushsingh01042003/) , [MckinellGreen7](https://github.com/MckinellGreen7/) , [smk927](https://github.com/smk927/) , [Cobalt9000](https://github.com/Cobalt9000/) , [ArshGupta74](https://github.com/ArshGupta74/) , [bhuvankum4r](https://github.com/bhuvankum4r/) , [niharika1708](https://github.com/niharika1708/) , [hitha-n](https://github.com/hitha-n/)
 
 
   ## Backend and Frontend installation steps 🪜:
