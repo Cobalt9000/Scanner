@@ -312,6 +312,38 @@ const Overview = () => {
     }
   };
 
+  // AI Model Implementation:
+
+  const [aiMessage, setAiMessage] = useState('');
+  const [aiResponse, setAiResponse] = useState('');
+
+  
+  
+  const handleAiChat = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('http://localhost:3000/gemini-chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: aiMessage }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to get response from Gemini');
+      }
+  
+      const data = await response.json();
+      setAiResponse(data.response);
+    } catch (error) {
+      console.error('Error in AI chat:', error);
+      setAiResponse('Failed to get response from Gemini');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (    
     <>
       <div className="bg-[#121212] text-white min-h-screen p-8 w-full overflow-hidden ">
@@ -357,6 +389,21 @@ const Overview = () => {
                     }
                   } }
                   className="bg-[#282828] text-white rounded-2xl py-4 px-4 w-full mb-2 focus:outline-none" />
+              <div className="mt-4">
+                  <input
+                    type="text"
+                    placeholder="Enter the genre of your project"
+                    value={aiMessage}
+                    onChange={(e) => setAiMessage(e.target.value)}
+                    className="bg-[#282828] text-white rounded-2xl py-4 px-4 w-full mb-2 focus:outline-none"
+                  />
+                  <button
+                    onClick={handleAiChat}
+                    className="bg-[#a4ff9e] hover:bg-black hover:text-[#a4ff9e] text-black py-3 px-6 rounded-lg w-64 transition duration-300 font-bold mt-2"
+                  >
+                    Get Suggestions
+                  </button>
+                </div>
                 {keyValuePairs.map((pair, index) => (
                   <div className="flex space-x-2 mb-2" key={index}>
                     <input
@@ -397,6 +444,21 @@ const Overview = () => {
                   value={localDirectoryPath}
                   onChange={(e) => setLocalDirectoryPath(e.target.value)}
                   className="bg-[#282828] text-white rounded-2xl py-4 px-4 w-full mb-2 focus:outline-none" />
+                <div className="mt-4">
+                <input
+                  type="text"
+                  placeholder="Enter the genre of your project"
+                  value={aiMessage}
+                  onChange={(e) => setAiMessage(e.target.value)}
+                  className="bg-[#282828] text-white rounded-2xl py-4 px-4 w-full mb-2 focus:outline-none"
+                />
+                <button
+                  onClick={handleAiChat}
+                  className="bg-[#a4ff9e] hover:bg-black hover:text-[#a4ff9e] text-black py-3 px-6 rounded-lg w-64 transition duration-300 font-bold mt-2"
+                >
+                  Get Suggestions
+                </button>
+              </div>
                 {keyValuePairs.map((pair, index) => (
                   <div className="flex space-x-2 mb-2 mt-4" key={index}>
                     <input
@@ -440,6 +502,18 @@ const Overview = () => {
             </div>
           </div>
         </div>
+
+  {/* AI model Implementation */}
+
+  {aiResponse && (
+    <div className="mt-4 bg-[#282828] text-white rounded-lg p-4">
+      <h3 className="text-lg mb-2">Suggestions:</h3>
+      <p>{aiResponse}</p>
+    </div>
+  )}
+  <br></br>
+
+  {/* over */}
 
         <div className="flex flex-col md:flex-row gap-8 w-[95%] mx-auto" style={{height:'500px'}}>
         <Suspense fallback={<Loading />}>

@@ -12,6 +12,8 @@ import Project from './models/project.model.js';
 import ScanReport from './models/scanReport.model.js';
 import connectToMongoDB from './db.js';
 import autoPopulate from './utils/autoPopulate.js';
+import { TextServiceClient } from '@google-ai/generativelanguage';
+import { GoogleAuth } from 'google-auth-library';
 import mongoose from 'mongoose';
 dotenv.config();
 const app = express();
@@ -252,6 +254,29 @@ app.post("/regexValue", async (req, res) => {
   const response = await autoPopulate(data)
   return res.json(response)
 })
+
+app.post('/gemini-chat', async (req, res) => {
+  const { message } = req.body;
+  const prompt = `Suggest me the possible PIIs to be scanned in a ${message} project with only PII names nothing else, give each pii name in a square bracket and make them comma seperated values`;
+  
+  const client = new TextServiceClient({
+    authClient: new GoogleAuth().fromAPIKey(process.env.GEMINI_API_KEY),
+  });
+
+  try {
+    const result = await client.generateText({
+      model: 'models/text-bison-001',
+      prompt: { text: prompt },
+    });
+
+    const response = result[0].candidates[0].output.replace(/\*/g, '').trim();
+
+    res.json({ response });
+  } catch (error) {
+    console.error('Error calling Gemini API:', error);
+    res.status(500).json({ error: 'Failed to get response from Gemini' });
+  }
+});
 
 app.listen(port, () => {
   connectToMongoDB();
